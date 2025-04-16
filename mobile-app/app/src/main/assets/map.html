@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Leaflet Map</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Leaflet.markercluster CSS from CDN -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
+    <!-- leaflet-control-geocoder CSS from CDN -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+    <!-- Leaflet Routing Machine CSS from CDN -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
+    <!-- Leaflet Fullscreen CSS from CDN -->
+    <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet' />
+    <style>
+        #map {
+            width: 100%;
+            height: 100vh;
+        }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<!-- Leaflet.markercluster JavaScript from CDN -->
+<script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+<!-- leaflet-control-geocoder JavaScript from CDN -->
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+<!-- Leaflet Routing Machine JavaScript from CDN -->
+<script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+<!-- Leaflet Fullscreen JavaScript from CDN -->
+<script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
+<script>
+    // Initialize the map
+    var map = L.map('map', {
+        fullscreenControl: true,
+        forcePseudoFullscreen: true
+    }).setView([46.0569, 14.5058], 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    // Initialize the LayerGroup globally so it can be accessed across function calls
+    var markersLayerGroup = L.layerGroup().addTo(map);
+
+    // Add geocoder control
+    L.Control.geocoder().addTo(map)
+
+    // Variable to store the current routing control
+    var currentRoutingControl = null;
+
+    // Define a global variable to store the user location marker
+    var userLocationMarker = null;
+     var userIcon = L.icon({
+        iconUrl: 'https://img.icons8.com/?size=100&id=3781&format=png&color=FA5252',//'https://cdn-icons-png.flaticon.com/512/684/684908.png', // Custom user location icon
+        iconSize: [40, 40], // Icon size
+        iconAnchor: [20, 40], // Anchor point
+        popupAnchor: [0, -35] // Adjust popup position
+    });
+    // ✅ Get user's location from Android
+    var storedLatitude = null;
+    var storedLongitude = null;
+
+    // Function to update user location from Android WebAppInterface
+    function updateUserLocation() {
+        storedLatitude = parseFloat(Android.getLatitude());
+        storedLongitude = parseFloat(Android.getLongitude());
+    }
+
+    // ✅ Function to add user location (separately from clustering)
+    function addUserLocationMarker() {
+        if (!isNaN(storedLatitude) && !isNaN(storedLongitude)) {
+            if (!userLocationMarker) {
+                console.log("User location marker is not there, adding it...");
+                userLocationMarker = L.marker([storedLatitude, storedLongitude], { icon: userIcon })
+                    .bindPopup("<b>You are here</b>")
+                    .addTo(map) // ✅ Add it directly to the map (NOT the cluster group)
+                    .openPopup(); // ✅ Keep popup open
+            } else {
+                console.log("User location marker already exists, updating position...");
+                userLocationMarker.setLatLng([storedLatitude, storedLongitude]);
+            }
+        } else {
+            console.warn("User location is not available.");
+        }
+    }
+
+    // Function for New API restaurants (already have lat/lon)
+    function addMarkersWithCoordinates(restaurants, ) {
+        console.log("In addMarkersWithCoordinates");
+
+         // ✅ Update user location only once
+        updateUserLocation();
+
+        // Clear existing markers before adding new ones
+        markersLayerGroup.clearLayers();
+
+        // Clear previous route when new markers are added
+        clearRoute();
+
+        // ✅ Ensure user location is separate (call this function)
+        addUserLocationMarker();
+
+        // Create a new marker cluster group
+        var markers = L.markerClusterGroup({
+            disableClusteringAtZoom: 15, // Stops clustering at zoom level 15+
+            maxClusterRadius: 60, // Distance (in pixels) before markers are grouped
+            animateAddingMarkers: true, // Smooth marker animations
+            removeOutsideVisibleBounds: true // Performance optimization
+        });
+
+        restaurants.forEach(function(restaurant) {
+            if (restaurant.latitude !== 0.0 && restaurant.longitude !== 0.0) {
+                var marker = L.marker([restaurant.latitude, restaurant.longitude])
+                    .bindPopup('<b>' + restaurant.name + '</b><br>' + restaurant.address +
+                    '<br><button onclick="showDirections(' + restaurant.latitude + ', ' + restaurant.longitude + ')">Directions</button>');
+
+                markers.addLayer(marker); // Add marker to the cluster group
+            } else {
+                console.warn("Skipping restaurant with missing lat/lon:", restaurant);
+            }
+        });
+
+        // Add clustered markers to the map
+        map.addLayer(markers);
+
+        // Store the marker cluster group globally to allow clearing later
+        markersLayerGroup = markers;
+
+        console.log("addMarkersWithCoordinates ended.");
+    }
+
+
+    // Function to show directions
+    function showDirections(lat, lon) {
+        // ✅ Ensure user location is up-to-date
+        updateUserLocation();
+
+        // Clear previous route
+        clearRoute();
+
+        if (!isNaN(storedLatitude) && !isNaN(storedLongitude)) {
+            // ✅ Update user marker position instead of adding a new one
+            if (userLocationMarker) {
+                userLocationMarker.setLatLng([storedLatitude, storedLongitude]);
+            }
+
+            // ✅ Create a routing control for navigation
+            currentRoutingControl = L.Routing.control({
+                waypoints: [
+                    L.latLng(storedLatitude, storedLongitude),
+                    L.latLng(lat, lon)
+                ],
+                routeWhileDragging: true,
+                createMarker: function(i, waypoint, n) {
+                    // ✅ Only add a marker for the destination (i == 1 means it's the second point)
+                    if (i === 1) {
+                        return L.marker(waypoint.latLng);
+                    }
+                    return null; // ✅ Do not add a marker for the user's location
+                } // ✅ Prevents Leaflet from adding duplicate markers
+            }).addTo(map);
+
+            // ✅ Wait for route calculation, then adjust map to fit the full route
+            currentRoutingControl.on('routesfound', function(e) {
+                var route = e.routes[0]; // Get the first route
+                var routeCoordinates = route.coordinates; // Get all coordinates of the route
+                var bounds = L.latLngBounds(routeCoordinates); // Create bounds from route coordinates
+
+                // ✅ Fit the map view to include the full route
+                map.fitBounds(bounds, { padding: [10, 10] });
+            });
+
+        } else {
+            alert('Could not get your stored location.');
+            console.log('Could not get your stored location.');
+        }
+    }
+
+    // Function to clear the current route
+    function clearRoute() {
+        if (currentRoutingControl) {
+            map.removeControl(currentRoutingControl);
+            currentRoutingControl = null;
+        }
+    }
+
+    function fitBoundsToMarkers() {
+        console.log("In fitBoundsToMarkers");
+        if (typeof markersLayerGroup === 'undefined' || markersLayerGroup.getLayers().length === 0) {
+            console.log("No markers to fit bounds.");
+            return;
+        }
+
+        var bounds = L.latLngBounds(); // Create bounds object
+        markersLayerGroup.eachLayer(function(marker) {
+            bounds.extend(marker.getLatLng()); // Extend bounds to include each marker
+        });
+
+        map.fitBounds(bounds, { padding: [20, 20] }); // Adjust zoom & center
+        console.log("fitBoundsToMarkers ended.");
+    }
+
+
+</script>
+</body>
+</html>

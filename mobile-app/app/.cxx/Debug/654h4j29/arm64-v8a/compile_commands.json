@@ -1,0 +1,17 @@
+[
+{
+  "directory": "C:/Users/user/AndroidStudioProjects/RestaurantRecommender/app/.cxx/Debug/654h4j29/arm64-v8a",
+  "command": "C:\\Users\\user\\AppData\\Local\\Android\\Sdk\\ndk\\26.1.10909125\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\clang++.exe --target=aarch64-none-linux-android24 --sysroot=C:/Users/user/AppData/Local/Android/Sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/windows-x86_64/sysroot -Dllama_EXPORTS -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security   -fno-limit-debug-info  -fPIC -o CMakeFiles\\llama.dir\\llama.cpp\\src\\llama.cpp.o -c C:\\Users\\user\\AndroidStudioProjects\\RestaurantRecommender\\app\\src\\main\\cpp\\llama.cpp\\src\\llama.cpp",
+  "file": "C:\\Users\\user\\AndroidStudioProjects\\RestaurantRecommender\\app\\src\\main\\cpp\\llama.cpp\\src\\llama.cpp"
+},
+{
+  "directory": "C:/Users/user/AndroidStudioProjects/RestaurantRecommender/app/.cxx/Debug/654h4j29/arm64-v8a",
+  "command": "C:\\Users\\user\\AppData\\Local\\Android\\Sdk\\ndk\\26.1.10909125\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\clang++.exe --target=aarch64-none-linux-android24 --sysroot=C:/Users/user/AppData/Local/Android/Sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/windows-x86_64/sysroot -Dllama_EXPORTS -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security   -fno-limit-debug-info  -fPIC -o CMakeFiles\\llama.dir\\llama.cpp\\common\\common.cpp.o -c C:\\Users\\user\\AndroidStudioProjects\\RestaurantRecommender\\app\\src\\main\\cpp\\llama.cpp\\common\\common.cpp",
+  "file": "C:\\Users\\user\\AndroidStudioProjects\\RestaurantRecommender\\app\\src\\main\\cpp\\llama.cpp\\common\\common.cpp"
+},
+{
+  "directory": "C:/Users/user/AndroidStudioProjects/RestaurantRecommender/app/.cxx/Debug/654h4j29/arm64-v8a",
+  "command": "C:\\Users\\user\\AppData\\Local\\Android\\Sdk\\ndk\\26.1.10909125\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\clang.exe --target=aarch64-none-linux-android24 --sysroot=C:/Users/user/AppData/Local/Android/Sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/windows-x86_64/sysroot -Dllama_EXPORTS -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -fno-limit-debug-info  -fPIC -o CMakeFiles\\llama.dir\\llama.cpp\\ggml\\src\\ggml.c.o -c C:\\Users\\user\\AndroidStudioProjects\\RestaurantRecommender\\app\\src\\main\\cpp\\llama.cpp\\ggml\\src\\ggml.c",
+  "file": "C:\\Users\\user\\AndroidStudioProjects\\RestaurantRecommender\\app\\src\\main\\cpp\\llama.cpp\\ggml\\src\\ggml.c"
+}
+]

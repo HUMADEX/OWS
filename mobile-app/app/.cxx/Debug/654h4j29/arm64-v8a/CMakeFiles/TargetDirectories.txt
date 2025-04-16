@@ -1,0 +1,3 @@
+C:/Users/user/AndroidStudioProjects/RestaurantRecommender/app/.cxx/Debug/654h4j29/arm64-v8a/CMakeFiles/llama.dir
+C:/Users/user/AndroidStudioProjects/RestaurantRecommender/app/.cxx/Debug/654h4j29/arm64-v8a/CMakeFiles/edit_cache.dir
+C:/Users/user/AndroidStudioProjects/RestaurantRecommender/app/.cxx/Debug/654h4j29/arm64-v8a/CMakeFiles/rebuild_cache.dir
